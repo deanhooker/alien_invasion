@@ -64,10 +64,7 @@ def check_play_button(ai_settings, screen, stats, sb, play_button, ship,
         stats.game_active = True
 
         # Reset the scoreboard images.
-        sb.prep_score()
-        sb.prep_high_score()
-        sb.prep_level()
-        sb.prep_ships()
+        sb.prep_images()
 
         # Empty the list of aliens and bullets.
         aliens.empty()
@@ -124,14 +121,18 @@ def check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship,
 
     if len(aliens) == 0:
         # If the entire fleet is destroyed, start a new level.
-        bullets.empty()
-        ai_settings.increase_speed()
+        start_new_level(ai_settings, screen, stats, sb, ship, aliens, bullets)
+        
+def start_new_level(ai_settings, screen, stats, sb, ship, aliens, bullets):
+    """Create new fleet and level up settings."""
+    bullets.empty()
+    ai_settings.increase_speed()
 
-        # Increase level.
-        stats.level += 1
-        sb.prep_level()
+    # Increase level.
+    stats.level += 1
+    sb.prep_level()
 
-        create_fleet(ai_settings, screen, ship, aliens)
+    create_fleet(ai_settings, screen, ship, aliens)
 
 def get_number_aliens_x(ai_settings, alien_width):
     """Determine the number of aliens that fit in a row."""
@@ -240,13 +241,3 @@ def save_high_score(stats):
 
     with open(filename, 'w') as f_obj:
         f_obj.write(str(stats.high_score))
-
-def load_high_score(stats):
-    """Load high score from high_score.txt."""
-    filename = 'high_score.txt'
-
-    try:
-        with open(filename) as f_obj:
-            stats.high_score = int(f_obj.read())
-    except FileNotFoundError:
-        pass
